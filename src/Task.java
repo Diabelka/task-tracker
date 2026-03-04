@@ -19,6 +19,11 @@ public class Task {
         this.status = status;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
     public String getTitle() {
         return title;
     }
@@ -27,23 +32,19 @@ public class Task {
         return description;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getStatus() {
         return status;
     }
 
-    public enum Status {
-        NEW,
-        IN_PROGRESS,
-        DONE
+    public int getId() {
+        return id;
     }
+
+//    public enum Status {
+//        NEW,
+//        IN_PROGRESS,
+//        DONE
+//    }
 
     @Override
     public boolean equals(Object obj) {

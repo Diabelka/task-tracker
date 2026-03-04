@@ -9,6 +9,7 @@ public class Main {
 
         printMenu();
         int userInput = scanner.nextInt();
+        scanner.nextLine();
 
         while (userInput != 5) {
             if (userInput <= 0 || userInput > 5)
@@ -17,29 +18,36 @@ public class Main {
             switch (userInput) {
                 case 1: // Добавляем задачи
                     System.out.println("Введите название задачи ");
-                    String title = scanner.next();
+                    String title = scanner.nextLine();
                     System.out.println("Введите описание здачи ");
-                    String description = scanner.next();
+                    String description = scanner.nextLine();
 
                     System.out.println("Чтобы добавить подзадачу введите 1 ");
                     System.out.println("Чтобы вернуться в главное меню введите любое другое число ");
-                    int subTask = scanner.nextInt();
+                    int newSubTask = scanner.nextInt();
+                    scanner.nextLine();
 
-                    if (subTask == 1) {
+                    if (newSubTask == 1) {
                         Epic epic = new Epic();
                         epic.setTitle(title);
                         epic.setDescription(description);
 
-                        while (subTask == 1) {
+                        while (newSubTask == 1) {
 
                             System.out.println("Введите название подзадачи ");
-                            String subTitle = scanner.next();
+                            String subTitle = scanner.nextLine();
                             System.out.println("Введите описание подздачи ");
-                            String subDescription = scanner.next();
+                            String subDescription = scanner.nextLine();
+
+                            SubTask subTask = new SubTask();
+                            subTask.setTitle(subTitle);
+                            subTask.setDescription(subDescription);
+                            epic.addSubTask(subTask);
 
                             System.out.println("Чтобы добавить подзадачу введите 1 ");
                             System.out.println("Чтобы вернуться в главное меню введите любое другое число ");
-                            subTask = scanner.nextInt();
+                            newSubTask = scanner.nextInt();
+                            scanner.nextLine();
                         }
                         meneger.addTask(epic);
                     }
@@ -47,22 +55,29 @@ public class Main {
                         Task task = new Task();
                         task.setTitle(title);
                         task.setDescription(description);
+                        task.setStatus("NEW");
                         meneger.addTask(task);
                     }
 
                     break;
                 case 2: // Просмотр списка задач
-
+                    meneger.printAllTasks();
                     break; //
                 case 3:
                     break;
-                case 4:
+                case 4: // Удаление задачи
+                    System.out.println("Ведите идентификационный номер для задачи которую хотите удалить: ");
+                    int index = scanner.nextInt();
+                    scanner.nextLine();
+                    meneger.deleteTask(index);
+
                     break;
                 default:
                     break;
             }
             printMenu();
             userInput = scanner.nextInt();
+            scanner.nextLine();
         }
     }
 
