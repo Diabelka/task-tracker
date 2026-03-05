@@ -1,12 +1,14 @@
 public class SubTask extends Task {
 
-    String epikTitle;
+    private int epikIndex;
 
-    public String getEpikTitle() {
-        return epikTitle;
+    public int getEpikIndex() {
+        return epikIndex;
     }
 
-    public void setEpikTitle(String epikTitle) {
-        this.epikTitle = epikTitle;
+    public void setEpikIndex(int epikIndex) {
+        this.epikIndex = epikIndex;
     }
+
+
 }

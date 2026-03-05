@@ -4,7 +4,7 @@ public class Task {
     protected String title;
     protected String description;
     protected int id;
-    protected String status;
+    protected Status status;
 
 
     public void setDescription(String description) {
@@ -15,7 +15,7 @@ public class Task {
         this.title = title;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -32,7 +32,7 @@ public class Task {
         return description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -40,11 +40,11 @@ public class Task {
         return id;
     }
 
-//    public enum Status {
-//        NEW,
-//        IN_PROGRESS,
-//        DONE
-//    }
+    public static enum Status {
+        NEW,
+        IN_PROGRESS,
+        DONE
+    }
 
     @Override
     public boolean equals(Object obj) {

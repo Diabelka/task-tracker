@@ -31,6 +31,8 @@ public class Main {
                         Epic epic = new Epic();
                         epic.setTitle(title);
                         epic.setDescription(description);
+                        //epic.setStatus(Task.Status.NEW);
+                        meneger.addTask(epic);
 
                         while (newSubTask == 1) {
 
@@ -42,34 +44,62 @@ public class Main {
                             SubTask subTask = new SubTask();
                             subTask.setTitle(subTitle);
                             subTask.setDescription(subDescription);
-                            epic.addSubTask(subTask);
+                            subTask.setEpikIndex(epic.getId());
+                            subTask.setStatus(Task.Status.NEW);
+                            meneger.addTask(subTask);
 
                             System.out.println("Чтобы добавить подзадачу введите 1 ");
                             System.out.println("Чтобы вернуться в главное меню введите любое другое число ");
                             newSubTask = scanner.nextInt();
                             scanner.nextLine();
                         }
-                        meneger.addTask(epic);
+                       // meneger.addTask(epic);
                     }
                     else {
                         Task task = new Task();
                         task.setTitle(title);
                         task.setDescription(description);
-                        task.setStatus("NEW");
+                        task.setStatus(Task.Status.NEW);
                         meneger.addTask(task);
                     }
 
                     break;
                 case 2: // Просмотр списка задач
-                    meneger.printAllTasks();
-                    break; //
+                    System.out.println("1 - посмотреть список всех задач");
+                    System.out.println("2 - найти задачу по id");
+
+                    int printTask = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (printTask == 1) {
+                        meneger.printAllTasks();
+                    } else if (printTask == 2) {
+                        System.out.println("введите id задачи");
+                        printTask = scanner.nextInt();
+
+                        meneger.printTasks(printTask);
+
+                        Task task = new Task();
+                        task = meneger.getTask(printTask);
+                        if (task instanceof Epic)
+                        {
+                            System.out.println("Для вывода подзалач нажмите 1");
+                            int subTask = scanner.nextInt();
+                            scanner.nextLine();
+                            if (subTask == 1) {
+                                meneger.printSubTasks(printTask);
+                            }
+                        }
+                        printTask = 0;
+                    }
+                    break; //Изменить статус задачи
                 case 3:
                     break;
                 case 4: // Удаление задачи
                     System.out.println("Ведите идентификационный номер для задачи которую хотите удалить: ");
                     int index = scanner.nextInt();
                     scanner.nextLine();
-                    meneger.deleteTask(index);
+                    meneger.removeTask(index);
 
                     break;
                 default:
@@ -80,6 +110,11 @@ public class Main {
             scanner.nextLine();
         }
     }
+
+//    private enum PrintTask {
+//        EPIC,
+//        TASK
+//    }
 
     private static void printMenu() {
         System.out.println("Выберите действие и введите цифру:");
