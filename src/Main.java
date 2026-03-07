@@ -31,7 +31,7 @@ public class Main {
                         Epic epic = new Epic();
                         epic.setTitle(title);
                         epic.setDescription(description);
-                        //epic.setStatus(Task.Status.NEW);
+                        epic.setStatus(Task.Status.NEW);
                         meneger.addTask(epic);
 
                         while (newSubTask == 1) {
@@ -53,9 +53,8 @@ public class Main {
                             newSubTask = scanner.nextInt();
                             scanner.nextLine();
                         }
-                       // meneger.addTask(epic);
-                    }
-                    else {
+                        // meneger.addTask(epic);
+                    } else {
                         Task task = new Task();
                         task.setTitle(title);
                         task.setDescription(description);
@@ -81,8 +80,7 @@ public class Main {
 
                         Task task = new Task();
                         task = meneger.getTask(printTask);
-                        if (task instanceof Epic)
-                        {
+                        if (task instanceof Epic) {
                             System.out.println("Для вывода подзалач нажмите 1");
                             int subTask = scanner.nextInt();
                             scanner.nextLine();
@@ -94,13 +92,61 @@ public class Main {
                     }
                     break; //Изменить статус задачи
                 case 3:
+                    System.out.println("Введите id задачи для изменения её ституса");
+                    int indexTask = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Task task = meneger.getTask(indexTask);
+
+                    if (task instanceof Epic) {
+                        System.out.println("Задача с id: " + indexTask + " пренадлежит классу эпик. " +
+                                "Её статус завист от статуча подзадач");
+                    } else {
+                        System.out.println("Задача с id: " + indexTask + " имеет статус " + task.getStatus());
+                        System.out.println("Выберете новый статус задачи:");
+                        System.out.println("1 - NEW");
+                        System.out.println("2 - IN_PROGRESS");
+                        System.out.println("3 - DONE");
+
+                        int newStatus = scanner.nextInt();
+                        scanner.nextLine();
+
+                        String oldStatus = task.getStatus().toString();
+
+                        switch (newStatus) {
+                            case 1:
+                                if (oldStatus.equals("NEW")) {
+                                    System.out.println("Новый и старый статус совпадают");
+                                } else {
+                                    task.setStatus(Task.Status.NEW);
+                                }
+                                break;
+                            case 2:
+                                if (oldStatus.equals("IN_PROGRESS")) {
+                                    System.out.println("Новый и старый статус совпадают");
+                                } else {
+                                    task.setStatus(Task.Status.IN_PROGRESS);
+                                }
+                                break;
+                            case 3:
+                                if (oldStatus.equals("DONE")) {
+                                    System.out.println("Новый и старый статус совпадают");
+                                } else {
+                                    task.setStatus(Task.Status.DONE);
+                                }
+                                break;
+                        }
+
+                        meneger.updateTask(indexTask, task);
+                    }
+
                     break;
                 case 4: // Удаление задачи
                     System.out.println("Ведите идентификационный номер для задачи которую хотите удалить: ");
                     int index = scanner.nextInt();
                     scanner.nextLine();
                     meneger.removeTask(index);
-
+                    System.out.println("Удалена задача c id = " + index);
                     break;
                 default:
                     break;

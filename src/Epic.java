@@ -30,9 +30,4 @@ public class Epic extends Task {
         subTasksIds.remove(Integer.valueOf(subTaskId));
     }
 
-//    @Override
-//    public void setStatus(Status status) {
-//        throw new UnsupportedOperationException("Статус эпика нельзя изменить вручную! Он зависит от подзадач");
-//    }
-//
 }
