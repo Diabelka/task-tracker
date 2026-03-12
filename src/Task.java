@@ -40,12 +40,6 @@ public class Task {
         return id;
     }
 
-    public static enum Status {
-        NEW,
-        IN_PROGRESS,
-        DONE
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

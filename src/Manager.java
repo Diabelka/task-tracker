@@ -64,14 +64,13 @@ public class Manager {
         String oldEpicStatus = epic.getStatus().toString();
         int statusCauntNew = 0;
         int statusCauntDone = 0;
-        String subTaskStatus = "NEW";
+        //String subTaskStatus = "NEW";
 
         for (int indexSubTask : epic.getSubTasksIds()) {
             Task subTask = tasks.get(indexSubTask);
-            subTaskStatus = subTask.getStatus().toString();
-            if (subTaskStatus.equals("NEW")) {
+            if (Status.NEW.equals(subTask.status)) {
                 statusCauntNew++;
-            } else if (subTaskStatus.equals("DONE")) {
+            } else if (Status.DONE.equals(subTask.status)) {
                 statusCauntDone++;
             } else {
                 break;
@@ -79,132 +78,126 @@ public class Manager {
         }
 
         if (statusCauntNew == epic.getSubTaskCount()) {
-            if (!(oldEpicStatus.equals("NEW"))) {
-                epic.setStatus(Task.Status.NEW);
+            if (!(Status.NEW.equals(epic.status))) {
+                epic.setStatus(Status.NEW);
                 return true;
             }
         } else if (statusCauntDone == epic.getSubTaskCount()) {
-            if (!(oldEpicStatus.equals("DONE"))) {
-                epic.setStatus(Task.Status.DONE);
+            if (!(Status.DONE.equals(epic.status))) {
+                epic.setStatus(Status.DONE);
                 return true;
             }
         } else {
-            if (!(oldEpicStatus.equals("IN_PROGRESS"))) {
-                epic.setStatus(Task.Status.IN_PROGRESS);
+            if (!(Status.IN_PROGRESS.equals(epic.status))) {
+                epic.setStatus(Status.IN_PROGRESS);
                 return true;
             }
         }
         return false;
-}
-
-// Получение задачи по ID
-public Task getTask(int id) {
-    Task task = tasks.get(id);
-    if (task == null) {
-        System.out.println("Задача с id: " + id + "не найдена");
     }
-    return task;
-}
 
-// Вывод списка всех задач
-public void printAllTasks() {
-    if (tasks.isEmpty()) {
-        System.out.println(" Список задач пуст");
-    } else {
-        System.out.println("=== Список задач === ");
-        System.out.println("Задачи: ");
+    // Получение задачи по ID
+    public Task getTask(int id) {
+        Task task = tasks.get(id);
+        if (task == null) {
+            System.out.println("Задача с id: " + id + "не найдена");
+        }
+        return task;
+    }
 
-        for (Task task : tasks.values()) {
-            if (!(task instanceof SubTask)) {
-                System.out.println("Задача с id:" + task.getId() + " - " + task.title + " - " + task.description +
-                        " - " + task.status.toString());
+    // Вывод списка всех задач
+    public void printAllTasks() {
+        if (tasks.isEmpty()) {
+            System.out.println(" Список задач пуст");
+        } else {
+            System.out.println("=== Список задач === ");
+            System.out.println("Задачи: ");
+
+            for (Task task : tasks.values()) {
+                if (!(task instanceof SubTask)) {
+                    System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " - " + task.getDescription() +
+                            " - " + task.status.toString());
+                }
+            }
+            System.out.println("========================= ");
+        }
+    }
+
+    // Вывод задачи по индексу
+    public void printTasks(int indexID) {
+        if (tasks.isEmpty()) {
+            System.out.println(" Список задач пуст");
+        } else {
+            Task task = tasks.get(indexID);
+            if (task instanceof Epic) {
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " относится к классу Epic ");
+            } else if (task instanceof SubTask) {
+                int epicIndex = ((SubTask) task).getEpikIndex();
+                Epic epic = (Epic) tasks.get(epicIndex);
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() +
+                        " является подзадачей эпика c id:" + epic.getId());
+            } else {
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + "-" + task.getStatus());
             }
         }
-        System.out.println("========================= ");
     }
-}
 
-// Вывод задачи по индексу
-public void printTasks(int indexID) {
-    if (tasks.isEmpty()) {
-        System.out.println(" Список задач пуст");
-    } else {
-        Task task = tasks.get(indexID);
+    // Вывод подзадач
+    public void printSubTasks(int indexID) {
+        if (tasks.isEmpty()) {
+            System.out.println(" Список задач пуст");
+        } else {
+            Task task = tasks.get(indexID);
+            if (task instanceof Epic) {
+                Epic epic = (Epic) tasks.get(indexID);
+                for (int subIndex : epic.getSubTasksIds()) {
+                    Task subTask = tasks.get(subIndex);
+                    System.out.println("Подзадача с id: " + subIndex + " - " + subTask.getTitle() + " - " +
+                            subTask.getDescription() + "-" + subTask.getStatus());
+                }
+            }
+        }
+    }
+
+    // Удаление всех задач
+    public void deleteAllTasks() {
+        for (Task task : tasks.values()) {
+            if (task instanceof Epic) {
+                ((Epic) task).clearAllSubTasksIds();
+            }
+            tasks.remove(task);
+        }
+    }
+
+    // удаление задачи по индексу
+    public void removeTask(int index) {
+        Task task = tasks.get(index);
+
+        if (task == null) {
+            System.out.println("Задача с id: " + index + " не найдена");
+        }
+
         if (task instanceof Epic) {
-            System.out.println("Задача с id:" + task.getId() + " - " + task.title + " относится к классу Epic ");
-        } else if (task instanceof SubTask) {
+            Epic epic = (Epic) task;
+
+            for (Integer subTaskId : epic.getSubTasksIds()) {
+                tasks.remove(subTaskId);
+                System.out.println("Удалена подзадача c id = " + subTaskId);
+            }
+        }
+
+        tasks.remove(index);
+        //System.out.println("Удалена задача c id = " + index);
+
+        if (task instanceof SubTask) {
             int epicIndex = ((SubTask) task).getEpikIndex();
             Epic epic = (Epic) tasks.get(epicIndex);
-            System.out.println("Задача с id:" + task.getId() + " - " + task.title +
-                    " является подзадачей эпика c id:" + epic.getId());
-        } else {
-            System.out.println("Задача с id:" + task.getId() + " - " + task.title + "-" + task.getStatus());
-        }
-    }
-}
+            epic.clearSubTasksIds(index);
 
-// Вывод подзадач
-public void printSubTasks(int indexID) {
-    if (tasks.isEmpty()) {
-        System.out.println(" Список задач пуст");
-    } else {
-        Task task = tasks.get(indexID);
-        if (task instanceof Epic) {
-            Epic epic = (Epic) tasks.get(indexID);
-            for (int subIndex : epic.getSubTasksIds()) {
-                Task subTask = tasks.get(subIndex);
-                System.out.println("Подзадача с id: " + subIndex + " - " + subTask.title + " - " +
-                        subTask.description + "-" + subTask.getStatus());
+            if (epic.getSubTaskCount() == 0) {
+                epic.status = Status.NEW;
+                updateTask(epicIndex, epic);
             }
         }
     }
 }
-
-// Удаление всех задач
-public void deleteAllTasks() {
-    for (Task task : tasks.values()) {
-        if (task instanceof Epic) {
-            ((Epic) task).clearAllSubTasksIds();
-        }
-        tasks.remove(task);
-    }
-}
-
-// удаление задачи по индексу
-public void removeTask(int index) {
-    Task task = tasks.get(index);
-
-    if (task == null) {
-        System.out.println("Задача с id: " + index + " не найдена");
-    }
-
-    if (task instanceof Epic) {
-        Epic epic = (Epic) task;
-
-        for (Integer subTaskId : epic.getSubTasksIds()) {
-            tasks.remove(subTaskId);
-            System.out.println("Удалена подзадача c id = " + subTaskId);
-        }
-    }
-
-    tasks.remove(index);
-    //System.out.println("Удалена задача c id = " + index);
-
-    if (task instanceof SubTask) {
-        int epicIndex = ((SubTask) task).getEpikIndex();
-        Epic epic = (Epic) tasks.get(epicIndex);
-        epic.clearSubTasksIds(index);
-
-        if (epic.getSubTaskCount() == 0) {
-            epic.status = Task.Status.NEW;
-            updateTask(epicIndex, epic);
-        }
-        //else {
-//                recalculateEpicStatus(epicIndex);
-//            }
-    }
-
-
-}
-
-    }

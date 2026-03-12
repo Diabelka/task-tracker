@@ -31,7 +31,7 @@ public class Main {
                         Epic epic = new Epic();
                         epic.setTitle(title);
                         epic.setDescription(description);
-                        epic.setStatus(Task.Status.NEW);
+                        epic.setStatus(Status.NEW);
                         manager.addTask(epic);
 
                         while (newSubTask == 1) {
@@ -45,7 +45,7 @@ public class Main {
                             subTask.setTitle(subTitle);
                             subTask.setDescription(subDescription);
                             subTask.setEpikIndex(epic.getId());
-                            subTask.setStatus(Task.Status.NEW);
+                            subTask.setStatus(Status.NEW);
                             manager.addTask(subTask);
 
                             System.out.println("Чтобы добавить подзадачу введите 1 ");
@@ -58,7 +58,7 @@ public class Main {
                         Task task = new Task();
                         task.setTitle(title);
                         task.setDescription(description);
-                        task.setStatus(Task.Status.NEW);
+                        task.setStatus(Status.NEW);
                         manager.addTask(task);
                     }
 
@@ -90,8 +90,8 @@ public class Main {
                         }
                         printTask = 0;
                     }
-                    break; //Изменить статус задачи
-                case 3:
+                    break;
+                case 3: //Изменить статус задачи
                     System.out.println("Введите id задачи для изменения её ституса");
                     int indexTask = scanner.nextInt();
                     scanner.nextLine();
@@ -111,28 +111,26 @@ public class Main {
                         int newStatus = scanner.nextInt();
                         scanner.nextLine();
 
-                        String oldStatus = task.getStatus().toString();
-
                         switch (newStatus) {
                             case 1:
-                                if (oldStatus.equals("NEW")) {
+                                if (Status.NEW.equals(task.status)) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
-                                    task.setStatus(Task.Status.NEW);
+                                    task.setStatus(Status.NEW);
                                 }
                                 break;
                             case 2:
-                                if (oldStatus.equals("IN_PROGRESS")) {
+                                if (Status.IN_PROGRESS.equals(task.status)) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
-                                    task.setStatus(Task.Status.IN_PROGRESS);
+                                    task.setStatus(Status.IN_PROGRESS);
                                 }
                                 break;
                             case 3:
-                                if (oldStatus.equals("DONE")) {
+                                if (Status.DONE.equals(task.status)) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
-                                    task.setStatus(Task.Status.DONE);
+                                    task.setStatus(Status.DONE);
                                 }
                                 break;
                         }
@@ -156,11 +154,6 @@ public class Main {
             scanner.nextLine();
         }
     }
-
-//    private enum PrintTask {
-//        EPIC,
-//        TASK
-//    }
 
     private static void printMenu() {
         System.out.println("Выберите действие и введите цифру:");
