@@ -1,7 +1,6 @@
 import java.util.HashMap;
-import java.util.Objects;
 
-public class Meneger {
+public class Manager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private int indexID = 1;
 

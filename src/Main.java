@@ -4,7 +4,7 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Meneger meneger = new Meneger();
+        Manager manager = new Manager();
         System.out.println("Добро пожаловать трекер задач!");
 
         printMenu();
@@ -32,7 +32,7 @@ public class Main {
                         epic.setTitle(title);
                         epic.setDescription(description);
                         epic.setStatus(Task.Status.NEW);
-                        meneger.addTask(epic);
+                        manager.addTask(epic);
 
                         while (newSubTask == 1) {
 
@@ -46,7 +46,7 @@ public class Main {
                             subTask.setDescription(subDescription);
                             subTask.setEpikIndex(epic.getId());
                             subTask.setStatus(Task.Status.NEW);
-                            meneger.addTask(subTask);
+                            manager.addTask(subTask);
 
                             System.out.println("Чтобы добавить подзадачу введите 1 ");
                             System.out.println("Чтобы вернуться в главное меню введите любое другое число ");
@@ -59,7 +59,7 @@ public class Main {
                         task.setTitle(title);
                         task.setDescription(description);
                         task.setStatus(Task.Status.NEW);
-                        meneger.addTask(task);
+                        manager.addTask(task);
                     }
 
                     break;
@@ -71,21 +71,21 @@ public class Main {
                     scanner.nextLine();
 
                     if (printTask == 1) {
-                        meneger.printAllTasks();
+                        manager.printAllTasks();
                     } else if (printTask == 2) {
                         System.out.println("введите id задачи");
                         printTask = scanner.nextInt();
 
-                        meneger.printTasks(printTask);
+                        manager.printTasks(printTask);
 
                         Task task = new Task();
-                        task = meneger.getTask(printTask);
+                        task = manager.getTask(printTask);
                         if (task instanceof Epic) {
                             System.out.println("Для вывода подзалач нажмите 1");
                             int subTask = scanner.nextInt();
                             scanner.nextLine();
                             if (subTask == 1) {
-                                meneger.printSubTasks(printTask);
+                                manager.printSubTasks(printTask);
                             }
                         }
                         printTask = 0;
@@ -96,7 +96,7 @@ public class Main {
                     int indexTask = scanner.nextInt();
                     scanner.nextLine();
 
-                    Task task = meneger.getTask(indexTask);
+                    Task task = manager.getTask(indexTask);
 
                     if (task instanceof Epic) {
                         System.out.println("Задача с id: " + indexTask + " пренадлежит классу эпик. " +
@@ -137,7 +137,7 @@ public class Main {
                                 break;
                         }
 
-                        meneger.updateTask(indexTask, task);
+                        manager.updateTask(indexTask, task);
                     }
 
                     break;
@@ -145,7 +145,7 @@ public class Main {
                     System.out.println("Ведите идентификационный номер для задачи которую хотите удалить: ");
                     int index = scanner.nextInt();
                     scanner.nextLine();
-                    meneger.removeTask(index);
+                    manager.removeTask(index);
                     System.out.println("Удалена задача c id = " + index);
                     break;
                 default:
