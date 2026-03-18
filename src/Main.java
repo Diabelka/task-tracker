@@ -4,8 +4,8 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Manager manager = new Manager();
-        System.out.println("Добро пожаловать трекер задач!");
+        InMemoryTaskManager manager = new InMemoryTaskManager();
+        System.out.println("Добро пожаловать в трекер задач!");
 
         printMenu();
         int userInput = scanner.nextInt();
@@ -71,12 +71,12 @@ public class Main {
                     scanner.nextLine();
 
                     if (printTask == 1) {
-                        manager.printAllTasks();
+                        TaskPrinter.printAllTasks(manager.getAllTasks());
                     } else if (printTask == 2) {
                         System.out.println("введите id задачи");
                         printTask = scanner.nextInt();
 
-                        manager.printTasks(printTask);
+                        TaskPrinter.printTask(manager.getTask(printTask));
 
                         Task task = new Task();
                         task = manager.getTask(printTask);
@@ -85,7 +85,7 @@ public class Main {
                             int subTask = scanner.nextInt();
                             scanner.nextLine();
                             if (subTask == 1) {
-                                manager.printSubTasks(printTask);
+                                TaskPrinter.printSubTasks(manager.getAllSubTasks(printTask));
                             }
                         }
                         printTask = 0;

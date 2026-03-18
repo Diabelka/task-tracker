@@ -1,10 +1,12 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private int indexID = 1;
 
     // Добавление задач в hashMap
+    @Override
     public boolean addTask(Task task) {
         if (!(task instanceof SubTask)) {
             for (Task existingTask : tasks.values()) {
@@ -30,6 +32,7 @@ public class Manager {
     }
 
     // Обновление задачи по индексу
+    @Override
     public boolean updateTask(int indexTask, Task newTask) {
         Task task = tasks.get(indexTask);
         if (task == null) {
@@ -53,6 +56,7 @@ public class Manager {
     }
 
     // Измененипе статуса эпика
+    @Override
     public boolean recalculateEpicStatus(int epicIndex) {
         Epic epic = ((Epic) tasks.get(epicIndex));
 
@@ -97,6 +101,7 @@ public class Manager {
     }
 
     // Получение задачи по ID
+    @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
         if (task == null) {
@@ -105,61 +110,31 @@ public class Manager {
         return task;
     }
 
-    // Вывод списка всех задач
-    public void printAllTasks() {
-        if (tasks.isEmpty()) {
-            System.out.println(" Список задач пуст");
-        } else {
-            System.out.println("=== Список задач === ");
-            System.out.println("Задачи: ");
-
-            for (Task task : tasks.values()) {
-                if (!(task instanceof SubTask)) {
-                    System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " - " + task.getDescription() +
-                            " - " + task.status.toString());
-                }
-            }
-            System.out.println("========================= ");
-        }
+    @Override
+    public ArrayList<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    // Вывод задачи по индексу
-    public void printTasks(int indexID) {
+    @Override
+    public ArrayList<Task> getAllSubTasks(int epicIndex) {
+        ArrayList<Task> subTasks = new ArrayList<>();
+
         if (tasks.isEmpty()) {
             System.out.println(" Список задач пуст");
         } else {
-            Task task = tasks.get(indexID);
+            Task task = tasks.get(epicIndex);
             if (task instanceof Epic) {
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " относится к классу Epic ");
-            } else if (task instanceof SubTask) {
-                int epicIndex = ((SubTask) task).getEpikIndex();
                 Epic epic = (Epic) tasks.get(epicIndex);
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() +
-                        " является подзадачей эпика c id:" + epic.getId());
-            } else {
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + "-" + task.getStatus());
-            }
-        }
-    }
-
-    // Вывод подзадач
-    public void printSubTasks(int indexID) {
-        if (tasks.isEmpty()) {
-            System.out.println(" Список задач пуст");
-        } else {
-            Task task = tasks.get(indexID);
-            if (task instanceof Epic) {
-                Epic epic = (Epic) tasks.get(indexID);
                 for (int subIndex : epic.getSubTasksIds()) {
-                    Task subTask = tasks.get(subIndex);
-                    System.out.println("Подзадача с id: " + subIndex + " - " + subTask.getTitle() + " - " +
-                            subTask.getDescription() + "-" + subTask.getStatus());
+                    subTasks.add(getTask(subIndex));
                 }
             }
         }
+        return subTasks;
     }
 
     // Удаление всех задач
+    @Override
     public void deleteAllTasks() {
         for (Task task : tasks.values()) {
             if (task instanceof Epic) {
@@ -170,6 +145,7 @@ public class Manager {
     }
 
     // удаление задачи по индексу
+    @Override
     public void removeTask(int index) {
         Task task = tasks.get(index);
 
@@ -201,3 +177,5 @@ public class Manager {
         }
     }
 }
+
+
