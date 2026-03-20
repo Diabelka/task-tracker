@@ -4,19 +4,26 @@ import java.util.HashMap;
 public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
     private int indexID = 1;
-    HistoryManager history = TaskMamagers.getDefaultHistory();
+    private final HistoryManager history = TaskManagers.getDefaultHistory();
 
     // Добавление задач в hashMap
     @Override
     public boolean addTask(Task task) {
         if (task instanceof SubTask) {
-            int epicId = ((SubTask) task).getEpicIndex();
+            int epicIndex = ((SubTask) task).getEpicIndex();
 
-            // Проверяем, есть ли уже такая подзадача в ЭТОМ эпике
+            // Проверяем, что эпик существует
+            Task epic = tasks.get(epicIndex);
+            if (epic == null || !(epic instanceof Epic)) {
+                System.out.println("Эпик с id: " + epicIndex + " не найден");
+                return false;
+            }
+
+            // Проверяем на дубликаты В этом эпике
             for (Task existingTask : tasks.values()) {
                 if (existingTask instanceof SubTask) {
                     SubTask existingSubTask = (SubTask) existingTask;
-                    if (existingSubTask.getEpicIndex() == epicId &&
+                    if (existingSubTask.getEpicIndex() == epicIndex &&
                             existingSubTask.equals(task)) {
                         System.out.println("Ошибка: такая подзадача уже есть в этом эпике! (" + task.getTitle() + ")");
                         return false;
@@ -24,17 +31,18 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
 
+            // Присваиваем ID и добавляем в общую карту
             task.setId(indexID++);
             tasks.put(task.getId(), task);
             System.out.println("Задача добавлена с id: " + task.getId());
 
-            int epicIndex = ((SubTask) task).getEpicIndex();
-            Task epic = tasks.get(epicIndex);
+            // Добавляем ВЕРНЫЙ ID в эпик
             ((Epic) epic).addSubTask(task.getId());
+
             return true;
 
         } else {
-            // Для обычных задач и эпиков — глобальная проверка
+            // Для обычных задач и эпиков — глобальная проверка на дубликаты
             for (Task existingTask : tasks.values()) {
                 if (existingTask.equals(task)) {
                     System.out.println("Ошибка: такая задача уже есть! (" + task.getTitle() + ")");
@@ -54,36 +62,39 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean updateTask(int indexTask, Task newTask) {
         Task task = tasks.get(indexTask);
         if (task == null) {
-            System.out.println("Задача с id: " + indexTask + "не найдена");
+            System.out.println("Задача с id: " + indexTask + " не найдена");
             return false;
         } else {
             newTask.setId(indexTask);
             tasks.put(indexTask, newTask);
 
             System.out.println("Задача с id: " + indexTask + " обновлена");
-            System.out.println("Статус задачи " + task.getStatus());
+            System.out.println("Новый статус задачи: " + newTask.getStatus());
 
-            if (task instanceof SubTask) {
-                int epicIndex = ((SubTask) task).getEpicIndex();
+            if (newTask instanceof SubTask) {
+                int epicIndex = ((SubTask) newTask).getEpicIndex();
                 Task epic = tasks.get(epicIndex);
-                ((Epic) epic).addSubTask(task.getId());
+                if (!(epic instanceof Epic)) {
+                    System.out.println("Эпик с id: " + epicIndex + " не найден");
+                    return false;
+                }
+                ((Epic) epic).addSubTask(newTask.getId());
                 recalculateEpicStatus(epicIndex);
             }
             return true;
         }
     }
 
-    // Измененипе статуса эпика
+    // Изменение статуса эпика
     @Override
     public boolean recalculateEpicStatus(int epicIndex) {
         Epic epic = ((Epic) tasks.get(epicIndex));
 
         if (epic == null) {
-            System.out.println("Задача с id: " + epicIndex + "не найдена");
+            System.out.println("Задача с id: " + epicIndex + " не найдена");
             return false;
         }
 
-        String oldEpicStatus = epic.getStatus().toString();
         int statusCountNew = 0;
         int statusCountDone = 0;
         //String subTaskStatus = "NEW";
@@ -203,7 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.clearSubTasksIds(index);
 
             if (epic.getSubTaskCount() == 0) {
-                epic.status = Status.NEW;
+                epic.setStatus(Status.NEW);
                 updateTask(epicIndex, epic);
             }
         }
