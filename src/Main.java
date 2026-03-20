@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -119,21 +120,21 @@ public class Main {
 
                         switch (newStatus) {
                             case 1:
-                                if (Status.NEW.equals(task.status)) {
+                                if (Status.NEW.equals(task.getStatus())) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
                                     task.setStatus(Status.NEW);
                                 }
                                 break;
                             case 2:
-                                if (Status.IN_PROGRESS.equals(task.status)) {
+                                if (Status.IN_PROGRESS.equals(task.getStatus())) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
                                     task.setStatus(Status.IN_PROGRESS);
                                 }
                                 break;
                             case 3:
-                                if (Status.DONE.equals(task.status)) {
+                                if (Status.DONE.equals(task.getStatus())) {
                                     System.out.println("Новый и старый статус совпадают");
                                 } else {
                                     task.setStatus(Status.DONE);
@@ -152,7 +153,8 @@ public class Main {
                     manager.removeTask(index);
                     break;
                 case 5:
-                    manager.getHistoryTasks();
+                    ArrayList <Task> historyTasks = manager.getHistoryTasks();
+                    TaskPrinter.printAllTasks(historyTasks);
                 default:
                     break;
             }
