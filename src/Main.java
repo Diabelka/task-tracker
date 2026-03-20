@@ -6,8 +6,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         //TaskManager manager = TaskMamagers.getDefault();
-        TaskManager manager = TaskMamagers.withTestData();
-        //HistoryManager history = TaskMamagers.getDefaultHistory();
+        TaskManager manager = TaskManagers.withTestData();
         int maxUserInput = 6;
         System.out.println("Добро пожаловать в трекер задач!");
 
@@ -23,13 +22,14 @@ public class Main {
                 case 1: // Добавляем задачи
                     System.out.println("Введите название задачи ");
                     String title = scanner.nextLine();
-                    System.out.println("Введите описание здачи ");
+                    System.out.println("Введите описание задачи ");
                     String description = scanner.nextLine();
 
                     System.out.println("Чтобы добавить подзадачу введите 1 ");
                     System.out.println("Чтобы вернуться в главное меню введите любое другое число ");
                     int newSubTask = scanner.nextInt();
                     scanner.nextLine();
+
 
                     if (newSubTask == 1) {
                         Epic epic = new Epic();
@@ -42,7 +42,7 @@ public class Main {
 
                             System.out.println("Введите название подзадачи ");
                             String subTitle = scanner.nextLine();
-                            System.out.println("Введите описание подздачи ");
+                            System.out.println("Введите описание подзадачи ");
                             String subDescription = scanner.nextLine();
 
                             SubTask subTask = new SubTask();
@@ -78,8 +78,7 @@ public class Main {
                     } else if (printTask == 2) {
                         System.out.println("введите id задачи");
                         printTask = scanner.nextInt();
-                        Task task = new Task();
-                        task = manager.getTask(printTask);
+                        Task task = manager.getTask(printTask);
 
                         if (task == null) {
                             break;
@@ -88,7 +87,7 @@ public class Main {
                         TaskPrinter.printTask(task);
 
                         if (task instanceof Epic) {
-                            System.out.println("Для вывода подзалач нажмите 1");
+                            System.out.println("Для вывода подзадач нажмите 1");
                             int subTask = scanner.nextInt();
                             scanner.nextLine();
                             if (subTask == 1) {
@@ -99,15 +98,15 @@ public class Main {
                     }
                     break;
                 case 3: //Изменить статус задачи
-                    System.out.println("Введите id задачи для изменения её ституса");
+                    System.out.println("Введите id задачи для изменения её статуса");
                     int indexTask = scanner.nextInt();
                     scanner.nextLine();
 
                     Task task = manager.getTask(indexTask);
 
                     if (task instanceof Epic) {
-                        System.out.println("Задача с id: " + indexTask + " пренадлежит классу эпик. " +
-                                "Её статус завист от статуча подзадач");
+                        System.out.println("Задача с id: " + indexTask + " принадлежит классу эпик. " +
+                                "Её статус зависит от статуса подзадач");
                     } else {
                         System.out.println("Задача с id: " + indexTask + " имеет статус " + task.getStatus());
                         System.out.println("Выберете новый статус задачи:");
@@ -115,34 +114,31 @@ public class Main {
                         System.out.println("2 - IN_PROGRESS");
                         System.out.println("3 - DONE");
 
-                        int newStatus = scanner.nextInt();
+                        int newStatusInput = scanner.nextInt();
                         scanner.nextLine();
+                        Status newStatus = null;
 
-                        switch (newStatus) {
+                        switch (newStatusInput) {
                             case 1:
-                                if (Status.NEW.equals(task.getStatus())) {
-                                    System.out.println("Новый и старый статус совпадают");
-                                } else {
-                                    task.setStatus(Status.NEW);
-                                }
+                                newStatus = Status.NEW;
                                 break;
                             case 2:
-                                if (Status.IN_PROGRESS.equals(task.getStatus())) {
-                                    System.out.println("Новый и старый статус совпадают");
-                                } else {
-                                    task.setStatus(Status.IN_PROGRESS);
-                                }
+                                newStatus = Status.IN_PROGRESS;
                                 break;
                             case 3:
-                                if (Status.DONE.equals(task.getStatus())) {
-                                    System.out.println("Новый и старый статус совпадают");
-                                } else {
-                                    task.setStatus(Status.DONE);
-                                }
+                                newStatus = Status.DONE;
                                 break;
+                            default:
+                                System.out.println("Неверный выбор статуса");
+                                return;
                         }
 
-                        manager.updateTask(indexTask, task);
+                        if (newStatus.equals(task.getStatus())) {
+                            System.out.println("Новый и старый статус совпадают");
+                        } else {
+                            task.setStatus(newStatus);
+                            manager.updateTask(indexTask, task);
+                        }
                     }
 
                     break;
@@ -153,8 +149,9 @@ public class Main {
                     manager.removeTask(index);
                     break;
                 case 5:
-                    ArrayList <Task> historyTasks = manager.getHistoryTasks();
+                    ArrayList<Task> historyTasks = manager.getHistoryTasks();
                     TaskPrinter.printAllTasks(historyTasks);
+                    break;
                 default:
                     break;
             }
@@ -162,7 +159,11 @@ public class Main {
             userInput = scanner.nextInt();
             scanner.nextLine();
         }
+
+        scanner.close();
     }
+
+
 
     private static void printMenu() {
         System.out.println("Выберите действие и введите цифру:");
