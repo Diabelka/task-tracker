@@ -1,6 +1,6 @@
-public final class TaskMamagers {
+public final class TaskManagers {
 
-    private void TaskManagers() {                 // приватный конструктор
+    private TaskManagers() {                 // приватный конструктор
         throw new AssertionError("Служебный класс не может быть создан");
     }
 
