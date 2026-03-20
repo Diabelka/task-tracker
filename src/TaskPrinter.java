@@ -8,7 +8,6 @@ public class TaskPrinter {
             System.out.println(" Список задач пуст");
         } else {
             System.out.println("=== Список задач === ");
-            System.out.println("Задачи: ");
 
             for (Task task : tasks) {
                 if (!(task instanceof SubTask)) {
@@ -22,15 +21,20 @@ public class TaskPrinter {
 
     public static void printTask(Task task) {
 
-        if (task instanceof Epic) {
-            System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " относится к классу Epic ");
-        } else if (task instanceof SubTask) {
-            int epicIndex = ((SubTask) task).getEpikIndex();
-            System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() +
-                    " является подзадачей эпика c id:" + epicIndex);
+        if (task == null) {
+            System.out.println("Задача не найдена");
         } else {
-            System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + "-" + task.getStatus());
+            if (task instanceof Epic) {
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " относится к классу Epic ");
+            } else if (task instanceof SubTask) {
+                int epicIndex = ((SubTask) task).getEpicIndex();
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() +
+                        " является подзадачей эпика c id:" + epicIndex);
+            } else {
+                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + "-" + task.getStatus());
+            }
         }
+
     }
 
     public static void printSubTasks(ArrayList<Task> tasks) {
@@ -38,7 +42,6 @@ public class TaskPrinter {
             System.out.println(" Список задач пуст");
         } else {
             System.out.println("=== Список подзадач === ");
-            System.out.println("Подзадачи: ");
 
             for (Task task : tasks) {
                 System.out.println("Подзадача с id:" + task.getId() + " - " + task.getTitle() + " - " +
@@ -48,5 +51,28 @@ public class TaskPrinter {
         }
     }
 
+    public static void printHistory (ArrayList<Task> tasks) {
+
+        int currentIndex = 0;
+        int epicIndex;
+
+        if (tasks.isEmpty()) {
+            System.out.println(" История просмотров пуста");
+        } else {
+            System.out.println("=== История просмотров: === ");
+            for (Task task : tasks) {
+                if (task instanceof SubTask) {
+                    epicIndex = ((SubTask) task).getEpicIndex();
+                    System.out.println(++currentIndex + ". Подзадача с id: " + task.getId() + " -  Эпика с id: " +
+                            epicIndex + " - " + task.getTitle() + " - " + task.getDescription() +
+                            " - " + task.getStatus());
+                } else {
+                    System.out.println(++currentIndex + ". Задача с id:" + task.getId() + " - " + task.getTitle() +
+                            " - " + task.getDescription() + " - " + task.getStatus());
+                }
+            }
+            System.out.println("========================= ");
+        }
+    }
 
 }

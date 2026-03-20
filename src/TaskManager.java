@@ -24,5 +24,8 @@ public interface TaskManager {
     void deleteAllTasks();
 
     // удаление задачи по индексу
-    void removeTask(int index);
+    boolean removeTask(int index);
+
+    ArrayList<Task> getHistoryTasks();
+
 }

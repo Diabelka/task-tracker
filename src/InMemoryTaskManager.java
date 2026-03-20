@@ -4,6 +4,7 @@ import java.util.HashMap;
 public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private int indexID = 1;
+    HistoryManager history = TaskMamagers.getDefaultHistory();
 
     // Добавление задач в hashMap
     @Override
@@ -24,7 +25,7 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(task.getId(), task);
             System.out.println("Задача добавлена с id: " + task.getId());
 
-            int epicIndex = ((SubTask) task).getEpikIndex();
+            int epicIndex = ((SubTask) task).getEpicIndex();
             Task epic = tasks.get(epicIndex);
             ((Epic) epic).addSubTask(task.getId());
             return true;
@@ -39,14 +40,14 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Задача с id: " + indexTask + "не найдена");
             return false;
         } else {
-            removeTask(indexTask);
+            newTask.setId(indexTask);
             tasks.put(indexTask, newTask);
 
             System.out.println("Задача с id: " + indexTask + " обновлена");
             System.out.println("Статус задачи " + task.getStatus());
 
             if (task instanceof SubTask) {
-                int epicIndex = ((SubTask) task).getEpikIndex();
+                int epicIndex = ((SubTask) task).getEpicIndex();
                 Task epic = tasks.get(epicIndex);
                 ((Epic) epic).addSubTask(task.getId());
                 recalculateEpicStatus(epicIndex);
@@ -66,27 +67,27 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         String oldEpicStatus = epic.getStatus().toString();
-        int statusCauntNew = 0;
-        int statusCauntDone = 0;
+        int statusCountNew = 0;
+        int statusCountDone = 0;
         //String subTaskStatus = "NEW";
 
         for (int indexSubTask : epic.getSubTasksIds()) {
             Task subTask = tasks.get(indexSubTask);
             if (Status.NEW.equals(subTask.status)) {
-                statusCauntNew++;
+                statusCountNew++;
             } else if (Status.DONE.equals(subTask.status)) {
-                statusCauntDone++;
+                statusCountDone++;
             } else {
                 break;
             }
         }
 
-        if (statusCauntNew == epic.getSubTaskCount()) {
+        if (statusCountNew == epic.getSubTaskCount()) {
             if (!(Status.NEW.equals(epic.status))) {
                 epic.setStatus(Status.NEW);
                 return true;
             }
-        } else if (statusCauntDone == epic.getSubTaskCount()) {
+        } else if (statusCountDone == epic.getSubTaskCount()) {
             if (!(Status.DONE.equals(epic.status))) {
                 epic.setStatus(Status.DONE);
                 return true;
@@ -105,13 +106,16 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTask(int id) {
         Task task = tasks.get(id);
         if (task == null) {
-            System.out.println("Задача с id: " + id + "не найдена");
+            System.out.println("Задача с id: " + id + " не найдена");
+            return null;
         }
+        history.addTask(task);
         return task;
     }
 
     @Override
     public ArrayList<Task> getAllTasks() {
+        history.addAllTask(new ArrayList<>(tasks.values()));
         return new ArrayList<>(tasks.values());
     }
 
@@ -130,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
+        history.addAllTask(subTasks);
         return subTasks;
     }
 
@@ -146,11 +151,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     // удаление задачи по индексу
     @Override
-    public void removeTask(int index) {
+    public boolean removeTask(int index) {
         Task task = tasks.get(index);
 
         if (task == null) {
             System.out.println("Задача с id: " + index + " не найдена");
+            return false;
         }
 
         if (task instanceof Epic) {
@@ -163,10 +169,10 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         tasks.remove(index);
-        //System.out.println("Удалена задача c id = " + index);
+        System.out.println("Удалена задача c id = " + index);
 
         if (task instanceof SubTask) {
-            int epicIndex = ((SubTask) task).getEpikIndex();
+            int epicIndex = ((SubTask) task).getEpicIndex();
             Epic epic = (Epic) tasks.get(epicIndex);
             epic.clearSubTasksIds(index);
 
@@ -175,6 +181,13 @@ public class InMemoryTaskManager implements TaskManager {
                 updateTask(epicIndex, epic);
             }
         }
+
+        return true;
+    }
+
+    @Override
+    public ArrayList<Task> getHistoryTasks() {
+        return history.getHistiry();
     }
 }
 

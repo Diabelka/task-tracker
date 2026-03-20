@@ -4,15 +4,18 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        //TaskManager manager = TaskMamagers.getDefault();
+        TaskManager manager = TaskMamagers.withTestData();
+        //HistoryManager history = TaskMamagers.getDefaultHistory();
+        int maxUserInput = 6;
         System.out.println("Добро пожаловать в трекер задач!");
 
         printMenu();
         int userInput = scanner.nextInt();
         scanner.nextLine();
 
-        while (userInput != 5) {
-            if (userInput <= 0 || userInput > 5)
+        while (userInput != maxUserInput) {
+            if (userInput <= 0 || userInput > maxUserInput)
                 printError();
 
             switch (userInput) {
@@ -44,7 +47,7 @@ public class Main {
                             SubTask subTask = new SubTask();
                             subTask.setTitle(subTitle);
                             subTask.setDescription(subDescription);
-                            subTask.setEpikIndex(epic.getId());
+                            subTask.setEpicIndex(epic.getId());
                             subTask.setStatus(Status.NEW);
                             manager.addTask(subTask);
 
@@ -53,7 +56,6 @@ public class Main {
                             newSubTask = scanner.nextInt();
                             scanner.nextLine();
                         }
-                        // meneger.addTask(epic);
                     } else {
                         Task task = new Task();
                         task.setTitle(title);
@@ -75,11 +77,15 @@ public class Main {
                     } else if (printTask == 2) {
                         System.out.println("введите id задачи");
                         printTask = scanner.nextInt();
-
-                        TaskPrinter.printTask(manager.getTask(printTask));
-
                         Task task = new Task();
                         task = manager.getTask(printTask);
+
+                        if (task == null) {
+                            break;
+                        }
+
+                        TaskPrinter.printTask(task);
+
                         if (task instanceof Epic) {
                             System.out.println("Для вывода подзалач нажмите 1");
                             int subTask = scanner.nextInt();
@@ -144,8 +150,9 @@ public class Main {
                     int index = scanner.nextInt();
                     scanner.nextLine();
                     manager.removeTask(index);
-                    System.out.println("Удалена задача c id = " + index);
                     break;
+                case 5:
+                    manager.getHistoryTasks();
                 default:
                     break;
             }
@@ -161,10 +168,12 @@ public class Main {
         System.out.println("2 - посмотреть список задач");
         System.out.println("3 - изменить статус задачи");
         System.out.println("4 - удалить задачу");
-        System.out.println("5 - выход");
+        System.out.println("5 - история просмотра задач");
+        System.out.println("6 - выход");
     }
 
     private static void printError() {
         System.out.println("Ошибка, такой команды нет. Попробуйте ещё раз!");
     }
+
 }
