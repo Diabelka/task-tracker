@@ -12,7 +12,7 @@ public class Epic extends Task {
 
     // получение списка задач
     public List<Integer> getSubTasksIds() {
-        return new ArrayList<>(subTasksIds);
+        return new ArrayList<Integer>(subTasksIds);
     }
 
     // Вывод количества подзадач

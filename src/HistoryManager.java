@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public interface HistoryManager {
 
     void addTask(Task task);
-    ArrayList <Task> getHistiry();
+    ArrayList <Task> getHistory();
 
-    void addAllTask(ArrayList<Task> allTasks);
+    public void clearHistory();
 }
