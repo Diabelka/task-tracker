@@ -2,25 +2,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
     private int indexID = 1;
     HistoryManager history = TaskMamagers.getDefaultHistory();
 
     // Добавление задач в hashMap
     @Override
     public boolean addTask(Task task) {
-        if (!(task instanceof SubTask)) {
+        if (task instanceof SubTask) {
+            int epicId = ((SubTask) task).getEpicIndex();
+
+            // Проверяем, есть ли уже такая подзадача в ЭТОМ эпике
             for (Task existingTask : tasks.values()) {
-                if (existingTask.equals(task)) {
-                    System.out.println("ошибка: такая задача уже есть! (" + task.getTitle() + ")");
-                    return false;
+                if (existingTask instanceof SubTask) {
+                    SubTask existingSubTask = (SubTask) existingTask;
+                    if (existingSubTask.getEpicIndex() == epicId &&
+                            existingSubTask.equals(task)) {
+                        System.out.println("Ошибка: такая подзадача уже есть в этом эпике! (" + task.getTitle() + ")");
+                        return false;
+                    }
                 }
             }
-            task.setId(indexID++);
-            tasks.put(task.getId(), task);
-            System.out.println("Задача добавлена с id: " + task.getId());
-            return true;
-        } else {
+
             task.setId(indexID++);
             tasks.put(task.getId(), task);
             System.out.println("Задача добавлена с id: " + task.getId());
@@ -28,6 +31,20 @@ public class InMemoryTaskManager implements TaskManager {
             int epicIndex = ((SubTask) task).getEpicIndex();
             Task epic = tasks.get(epicIndex);
             ((Epic) epic).addSubTask(task.getId());
+            return true;
+
+        } else {
+            // Для обычных задач и эпиков — глобальная проверка
+            for (Task existingTask : tasks.values()) {
+                if (existingTask.equals(task)) {
+                    System.out.println("Ошибка: такая задача уже есть! (" + task.getTitle() + ")");
+                    return false;
+                }
+            }
+
+            task.setId(indexID++);
+            tasks.put(task.getId(), task);
+            System.out.println("Задача добавлена с id: " + task.getId());
             return true;
         }
     }
@@ -73,27 +90,31 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (int indexSubTask : epic.getSubTasksIds()) {
             Task subTask = tasks.get(indexSubTask);
-            if (Status.NEW.equals(subTask.status)) {
+            if (subTask == null) {
+                continue;  // Пропускаем несуществующие подзадачи
+            }
+
+            if (Status.NEW.equals(subTask.getStatus())) {
                 statusCountNew++;
-            } else if (Status.DONE.equals(subTask.status)) {
+            } else if (Status.DONE.equals(subTask.getStatus())) {
                 statusCountDone++;
             } else {
-                break;
+                break; // Если хотябы одна задача имеет статус IN_PROGRESS, то и у эпика статус IN_PROGRESS
             }
         }
 
         if (statusCountNew == epic.getSubTaskCount()) {
-            if (!(Status.NEW.equals(epic.status))) {
+            if (!(Status.NEW.equals(epic.getStatus()))) {
                 epic.setStatus(Status.NEW);
                 return true;
             }
         } else if (statusCountDone == epic.getSubTaskCount()) {
-            if (!(Status.DONE.equals(epic.status))) {
+            if (!(Status.DONE.equals(epic.getStatus()))) {
                 epic.setStatus(Status.DONE);
                 return true;
             }
         } else {
-            if (!(Status.IN_PROGRESS.equals(epic.status))) {
+            if (!(Status.IN_PROGRESS.equals(epic.getStatus()))) {
                 epic.setStatus(Status.IN_PROGRESS);
                 return true;
             }
@@ -115,7 +136,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getAllTasks() {
-        history.addAllTask(new ArrayList<>(tasks.values()));
         return new ArrayList<>(tasks.values());
     }
 
@@ -123,18 +143,22 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Task> getAllSubTasks(int epicIndex) {
         ArrayList<Task> subTasks = new ArrayList<>();
 
-        if (tasks.isEmpty()) {
-            System.out.println(" Список задач пуст");
-        } else {
-            Task task = tasks.get(epicIndex);
-            if (task instanceof Epic) {
-                Epic epic = (Epic) tasks.get(epicIndex);
-                for (int subIndex : epic.getSubTasksIds()) {
-                    subTasks.add(getTask(subIndex));
-                }
-            }
+        Task task = tasks.get(epicIndex);
+        if (task == null) {
+            System.out.println("Задача с id: " + epicIndex + " не найдена");
+            return subTasks;
         }
-        history.addAllTask(subTasks);
+
+        if (!(task instanceof Epic)) {
+            System.out.println("Задача с id: " + epicIndex + " не является Epic");
+            return subTasks;
+        }
+
+        Epic epic = (Epic) task;
+        for (int subIndex : epic.getSubTasksIds()) {
+            subTasks.add(getTask(subIndex));  // getTask сам добавит в историю
+        }
+
         return subTasks;
     }
 
@@ -145,8 +169,10 @@ public class InMemoryTaskManager implements TaskManager {
             if (task instanceof Epic) {
                 ((Epic) task).clearAllSubTasksIds();
             }
-            tasks.remove(task);
         }
+
+        tasks.clear();
+        history.clearHistory();
     }
 
     // удаление задачи по индексу
@@ -187,7 +213,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getHistoryTasks() {
-        return history.getHistiry();
+        return history.getHistory();
     }
 }
 
