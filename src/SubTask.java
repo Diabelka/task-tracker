@@ -10,5 +10,13 @@ public class SubTask extends Task {
         this.epicIndex = epikIndex;
     }
 
-
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() +
+                " epicIndex=" + epicIndex +
+                " id=" + id +
+                ", title='" + title + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

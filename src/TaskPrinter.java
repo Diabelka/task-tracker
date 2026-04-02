@@ -11,8 +11,7 @@ public class TaskPrinter {
 
             for (Task task : tasks) {
                 if (!(task instanceof SubTask)) {
-                    System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " - " +
-                            task.getDescription() + " - " + task.getStatus());
+                    System.out.println(task);
                 }
             }
             System.out.println("========================= ");
@@ -24,15 +23,8 @@ public class TaskPrinter {
         if (task == null) {
             System.out.println("Задача не найдена");
         } else {
-            if (task instanceof Epic) {
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + " относится к классу Epic ");
-            } else if (task instanceof SubTask) {
-                int epicIndex = ((SubTask) task).getEpicIndex();
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() +
-                        " является подзадачей эпика c id:" + epicIndex);
-            } else {
-                System.out.println("Задача с id:" + task.getId() + " - " + task.getTitle() + "-" + task.getStatus());
-            }
+
+            System.out.println(task);
         }
 
     }
@@ -44,8 +36,7 @@ public class TaskPrinter {
             System.out.println("=== Список подзадач === ");
 
             for (Task task : tasks) {
-                System.out.println("Подзадача с id:" + task.getId() + " - " + task.getTitle() + " - " +
-                        task.getDescription() + " - " + task.getStatus());
+                System.out.println(task);
             }
             System.out.println("========================= ");
         }
@@ -61,15 +52,7 @@ public class TaskPrinter {
         } else {
             System.out.println("=== История просмотров: === ");
             for (Task task : tasks) {
-                if (task instanceof SubTask) {
-                    epicIndex = ((SubTask) task).getEpicIndex();
-                    System.out.println(++currentIndex + ". Подзадача с id: " + task.getId() + " -  Эпика с id: " +
-                            epicIndex + " - " + task.getTitle() + " - " + task.getDescription() +
-                            " - " + task.getStatus());
-                } else {
-                    System.out.println(++currentIndex + ". Задача с id:" + task.getId() + " - " + task.getTitle() +
-                            " - " + task.getDescription() + " - " + task.getStatus());
-                }
+                System.out.println(++currentIndex + task.toString());
             }
             System.out.println("========================= ");
         }

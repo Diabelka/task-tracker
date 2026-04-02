@@ -15,6 +15,15 @@ public class Task {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                " id=" + id +
+                ", title='" + title + '\'' +
+                ", status=" + status +
+                '}';
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }
