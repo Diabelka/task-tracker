@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -15,10 +16,10 @@ public interface TaskManager {
     Task getTask(int id);
 
     // Вывод списка всех задач
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
     // Получение подзадач
-    ArrayList<Task> getAllSubTasks(int epicIndex);
+    List<Task> getAllSubTasks(int epicIndex);
 
     // Удаление всех задач
     void deleteAllTasks();
@@ -26,6 +27,6 @@ public interface TaskManager {
     // удаление задачи по индексу
     boolean removeTask(int index);
 
-    ArrayList<Task> getHistoryTasks();
+    List<Task> getHistoryTasks();
 
 }
