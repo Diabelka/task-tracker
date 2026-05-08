@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
     private int indexID = 1;
     private final HistoryManager history = TaskManagers.getDefaultHistory();
+
 
     // Добавление задач в hashMap
     @Override
@@ -141,17 +143,17 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Задача с id: " + id + " не найдена");
             return null;
         }
-        history.addTask(task);
+        history.add(task);
         return task;
     }
 
     @Override
-    public ArrayList<Task> getAllTasks() {
+    public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
     }
 
     @Override
-    public ArrayList<Task> getAllSubTasks(int epicIndex) {
+    public List<Task> getAllSubTasks(int epicIndex) {
         ArrayList<Task> subTasks = new ArrayList<>();
 
         Task task = tasks.get(epicIndex);
@@ -183,7 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         tasks.clear();
-        history.clearHistory();
+        //history.clearHistory();
     }
 
     // удаление задачи по индексу
@@ -200,11 +202,13 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = (Epic) task;
 
             for (Integer subTaskId : epic.getSubTasksIds()) {
+                history.remove(subTaskId);
                 tasks.remove(subTaskId);
                 System.out.println("Удалена подзадача c id = " + subTaskId);
             }
         }
 
+        history.remove(index);
         tasks.remove(index);
         System.out.println("Удалена задача c id = " + index);
 
@@ -223,7 +227,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistoryTasks() {
+    public List<Task> getHistoryTasks() {
         return history.getHistory();
     }
 }
