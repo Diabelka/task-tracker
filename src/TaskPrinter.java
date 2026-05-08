@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskPrinter {
 
-    public static void printAllTasks(ArrayList<Task> tasks) {
+    public static void printAllTasks(List<Task> tasks) {
 
         if (tasks.isEmpty()) {
             System.out.println(" Список задач пуст");
@@ -29,7 +30,7 @@ public class TaskPrinter {
 
     }
 
-    public static void printSubTasks(ArrayList<Task> tasks) {
+    public static void printSubTasks(List<Task> tasks) {
         if (tasks.isEmpty()) {
             System.out.println(" Список задач пуст");
         } else {
@@ -42,7 +43,7 @@ public class TaskPrinter {
         }
     }
 
-    public static void printHistory (ArrayList<Task> tasks) {
+    public static void printHistory (List<Task> tasks) {
 
         int currentIndex = 0;
         int epicIndex;
@@ -52,7 +53,7 @@ public class TaskPrinter {
         } else {
             System.out.println("=== История просмотров: === ");
             for (Task task : tasks) {
-                System.out.println(++currentIndex + task.toString());
+                System.out.println(++currentIndex + ": " + task.toString());
             }
             System.out.println("========================= ");
         }
