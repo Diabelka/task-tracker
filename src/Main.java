@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -94,8 +95,9 @@ public class Main {
                                 TaskPrinter.printSubTasks(manager.getAllSubTasks(printTask));
                             }
                         }
-                        printTask = 0;
                     }
+                    List<Task> historyTasks = manager.getHistoryTasks();
+                    TaskPrinter.printHistory(historyTasks);
                     break;
                 case 3: //Изменить статус задачи
                     System.out.println("Введите id задачи для изменения её статуса");
@@ -149,8 +151,8 @@ public class Main {
                     manager.removeTask(index);
                     break;
                 case 5:
-                    ArrayList<Task> historyTasks = manager.getHistoryTasks();
-                    TaskPrinter.printAllTasks(historyTasks);
+                    List<Task> historyTasks2 = manager.getHistoryTasks();
+                    TaskPrinter.printHistory(historyTasks2);
                     break;
                 default:
                     break;
